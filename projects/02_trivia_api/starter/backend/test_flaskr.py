@@ -54,7 +54,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['questions'])
         self.assertTrue(data['total_questions'])
         self.assertTrue(data['categories'])
-        self.assertTrue(data['current_category'])
+        self.assertTrue(data['current_category'] == None)
 
     def test_deleteQuestion(self):
         response = self.client().get(

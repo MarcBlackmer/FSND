@@ -93,7 +93,7 @@ def create_app(test_config=None):
                 'questions': all_questions,
                 'total_questions': (len(questions)),
                 'categories': all_categories,
-                'current_category': 'foo'
+                'current_category': None
             })
         else:
             abort(404)
