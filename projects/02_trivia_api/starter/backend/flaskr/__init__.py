@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
-from models import setup_db, Question, Category
+from models import setup_db, db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
@@ -30,6 +30,9 @@ def create_app(test_config=None):
                              'GET, POST, PATCH, DELETE, OPTIONS')
         return response
 
+    # I moved these functions outside of the endpoints as I'm thinking in
+    # practice that it would be better to not expose the database schema, or
+    # I'm just overthinking this.
     def get_categories_list():
         categories = Category.query.order_by(Category.type).all()
         # the front end is expecting this format to be returned
@@ -108,6 +111,27 @@ def create_app(test_config=None):
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page.
   '''
+    @app.route('/questions/<int:question_id>/delete', methods=['GET', 'DELETE'])
+    def delete_question(question_id):
+        error = False
+        try:
+            Question.query.filter_by(id=question_id).delete()
+            db.session.commit()
+
+            return jsonify({
+                'success': True,
+                'status_code': 200
+            })
+        except:
+            error = True
+            db.session.rollback()
+
+            return jsonify({
+                'success': False,
+                'status_code': 418
+            })
+        finally:
+            db.session.close()
 
     '''
   @TODO:
