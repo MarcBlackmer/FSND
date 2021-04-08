@@ -30,9 +30,6 @@ def create_app(test_config=None):
                              'GET, POST, PATCH, DELETE, OPTIONS')
         return response
 
-    # I moved these functions outside of the endpoints as I'm thinking in
-    # practice that it would be better to not expose the database schema, or
-    # I'm just overthinking this.
     def get_categories_list():
         categories = Category.query.order_by(Category.type).all()
         # the front end is expecting this format to be returned
@@ -41,21 +38,14 @@ def create_app(test_config=None):
 
         return category_list
 
-    def paginate_questions(request, questions):
+    def paginate_questions(request, questions, items_per_page=QUESTIONS_PER_PAGE):
         page = request.args.get('page', 1, type=int)
-        start = (page - 1) * QUESTIONS_PER_PAGE
-        end = start + QUESTIONS_PER_PAGE
+        start = (page - 1) * items_per_page
+        end = start + items_per_page
 
-        all_questions = [question.format() for question in questions]
-        questions_results = all_questions[start:end]
+        results = [question.format() for question in questions]
 
-        return questions_results
-
-    def get_questions_list():
-        questions = Question.query.order_by(Question.id).all()
-        all_questions = paginate_questions(request, questions)
-
-        return all_questions
+        return results[start:end]
 
     '''
   @TODO:
@@ -91,7 +81,9 @@ def create_app(test_config=None):
     @app.route('/questions', methods=['GET'])
     def get_questions():
 
-        all_questions = get_questions_list()
+        questions = Question.query.order_by(Question.id).all()
+        all_questions = paginate_questions(request, questions)
+
         all_categories = get_categories_list()
 
         if len(all_questions):
@@ -99,11 +91,15 @@ def create_app(test_config=None):
                 'success': True,
                 'status_code': 200,
                 'questions': all_questions,
-                'total_questions': (len(all_questions)),
-                'categories': all_categories
+                'total_questions': (len(questions)),
+                'categories': all_categories,
+                'current_category': 'foo'
             })
         else:
             abort(404)
+            return jsonify({
+                'success': False
+            })
     '''
   @TODO:
   Create an endpoint to DELETE question using a question ID.
