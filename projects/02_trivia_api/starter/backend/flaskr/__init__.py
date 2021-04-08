@@ -29,6 +29,31 @@ def create_app(test_config=None):
         response.headers.add('Access-Control-Allow-Methods',
                              'GET, POST, PATCH, DELETE, OPTIONS')
         return response
+
+    def get_categories_list():
+        categories = Category.query.order_by(Category.type).all()
+        # the front end is expecting this format to be returned
+        category_list = {
+            category.id: category.type for category in categories}
+
+        return category_list
+
+    def paginate_questions(request, questions):
+        page = request.args.get('page', 1, type=int)
+        start = (page - 1) * QUESTIONS_PER_PAGE
+        end = start + QUESTIONS_PER_PAGE
+
+        all_questions = [question.format() for question in questions]
+        questions_results = all_questions[start:end]
+
+        return questions_results
+
+    def get_questions_list():
+        questions = Question.query.order_by(Question.id).all()
+        all_questions = paginate_questions(request, questions)
+
+        return all_questions
+
     '''
   @TODO:
   Create an endpoint to handle GET requests
@@ -36,13 +61,17 @@ def create_app(test_config=None):
   '''
     @app.route('/categories', methods=['GET'])
     def get_categories():
-        categories = Category.query.order_by('type').all()
-        all_categories = [category.format() for category in categories]
 
-        return jsonify({
-            'success': True,
-            'categories': all_categories
-        })
+        all_categories = get_categories_list()
+
+        if len(all_categories):
+            return jsonify({
+                'success': True,
+                'status_code': 200,
+                'categories': all_categories
+            })
+        else:
+            abort(404)
 
     '''
   @TODO:
@@ -56,7 +85,22 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions.
   '''
+    @app.route('/questions', methods=['GET'])
+    def get_questions():
 
+        all_questions = get_questions_list()
+        all_categories = get_categories_list()
+
+        if len(all_questions):
+            return jsonify({
+                'success': True,
+                'status_code': 200,
+                'questions': all_questions,
+                'total_questions': (len(all_questions)),
+                'categories': all_categories
+            })
+        else:
+            abort(404)
     '''
   @TODO:
   Create an endpoint to DELETE question using a question ID.
