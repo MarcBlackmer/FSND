@@ -66,7 +66,7 @@ def create_app(test_config=None):
         else:
             return jsonify({
                 'success': False,
-                'status_code': 404,
+                'status_code': 422,
                 'message': 'No categories found'
             })
 
@@ -102,7 +102,7 @@ def create_app(test_config=None):
         else:
             return jsonify({
                 'success': False,
-                'status_code': 404,
+                'status_code': 422,
                 'message': 'No questions found'
             })
     '''
@@ -125,11 +125,7 @@ def create_app(test_config=None):
                 'message': 'Record deleted'
             })
         else:
-            return jsonify({
-                'success': False,
-                'status_code': 404,
-                'message': 'Record not found'
-            })
+            abort(422)
 
         db.session.close()
 
@@ -176,6 +172,21 @@ def create_app(test_config=None):
   and shown whether they were correct or not.
   '''
 
+    @app.errorhandler(404)
+    def not_found_error(error):
+        return jsonify({
+            'success': False,
+            'status_code': 404,
+            'message': 'Resource not found'
+        }), 404
+
+    @app.errorhandler(422)
+    def unprocessable_error(error):
+        return jsonify({
+            'success': False,
+            'status_code': 422,
+            'message': 'Record not found'
+        })
     '''
   @TODO:
   Create error handlers for all expected errors

@@ -51,9 +51,9 @@ class TriviaTestCase(unittest.TestCase):
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['status_code'], 404)
+        self.assertEqual(data['status_code'], 422)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'No categories found')
+        self.assertEqual(data['message'], 'Record not found')
 
     def test_listQuestions(self):
         response = self.client().get('/questions')
@@ -72,9 +72,9 @@ class TriviaTestCase(unittest.TestCase):
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['status_code'], 404)
+        self.assertEqual(data['status_code'], 422)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'No questions found')
+        self.assertEqual(data['message'], 'Record not found')
 
     def test_deleteQuestion(self):
         dummy_question = Question(
@@ -97,7 +97,7 @@ class TriviaTestCase(unittest.TestCase):
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['status_code'], 404)
+        self.assertEqual(data['status_code'], 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Record not found')
 
