@@ -41,6 +41,7 @@ class TriviaTestCase(unittest.TestCase):
 
         # Test that the response code is equal to our expectation
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['status_code'], 200)
         # Test success response is equal
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['categories']))
@@ -59,6 +60,7 @@ class TriviaTestCase(unittest.TestCase):
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['status_code'], 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['questions'])
         self.assertTrue(data['total_questions'])
@@ -86,6 +88,7 @@ class TriviaTestCase(unittest.TestCase):
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['status_code'], 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], 'Record deleted')
 
