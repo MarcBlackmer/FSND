@@ -64,11 +64,7 @@ def create_app(test_config=None):
                 'categories': all_categories
             })
         else:
-            return jsonify({
-                'success': False,
-                'status_code': 422,
-                'message': 'No categories found'
-            })
+            abort(422)
 
     '''
   @TODO:
@@ -100,11 +96,7 @@ def create_app(test_config=None):
                 'current_category': None
             })
         else:
-            return jsonify({
-                'success': False,
-                'status_code': 422,
-                'message': 'No questions found'
-            })
+            abort(422)
     '''
   @TODO:
   Create an endpoint to DELETE question using a question ID.
