@@ -64,7 +64,11 @@ def create_app(test_config=None):
                 'categories': all_categories
             })
         else:
-            abort(404)
+            return jsonify({
+                'success': False,
+                'status_code': 404,
+                'message': 'No categories found'
+            })
 
     '''
   @TODO:
@@ -96,9 +100,10 @@ def create_app(test_config=None):
                 'current_category': None
             })
         else:
-            abort(404)
             return jsonify({
-                'success': False
+                'success': False,
+                'status_code': 404,
+                'message': 'No questions found'
             })
     '''
   @TODO:
@@ -110,26 +115,23 @@ def create_app(test_config=None):
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_question(question_id):
         error = False
-        try:
-            Question.query.get(question_id).delete()
-            db.session.commit()
+        question = Question.query.get(question_id)
 
+        if question is not None:
+            question.delete()
             return jsonify({
                 'success': True,
                 'status_code': 200,
                 'message': 'Record deleted'
             })
-        except:
-            error = True
-            db.session.rollback()
-
+        else:
             return jsonify({
                 'success': False,
                 'status_code': 404,
                 'message': 'Record not found'
             })
-        finally:
-            db.session.close()
+
+        db.session.close()
 
     '''
   @TODO:

@@ -75,7 +75,8 @@ class TriviaTestCase(unittest.TestCase):
         response = self.client().delete('/questions/1000')
         data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['status_code'], 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Record not found')
 
