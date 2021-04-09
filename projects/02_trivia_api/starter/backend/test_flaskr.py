@@ -4,7 +4,7 @@ import json
 from flask_sqlalchemy import SQLAlchemy
 
 from flaskr import create_app
-from models import setup_db, Question, Category
+from models import setup_db, db, Question, Category
 
 
 class TriviaTestCase(unittest.TestCase):
@@ -57,12 +57,27 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['current_category'] == None)
 
     def test_deleteQuestion(self):
-        response = self.client().get(
-            '/questions/23/delete')
+        dummy_question = Question(
+            question='dummy question', answer='dummy answer', difficulty=5, category=1)
+        db.session.add(dummy_question)
+        db.session.commit()
+
+        question_id = str(dummy_question.id)
+
+        response = self.client().delete('/questions/' + question_id)
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], 'Record deleted')
+
+    def test_deleteQuestion_failure(self):
+        response = self.client().delete('/questions/1000')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Record not found')
 
 
 # Make the tests conveniently executable
