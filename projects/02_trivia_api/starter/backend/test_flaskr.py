@@ -45,6 +45,15 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['categories']))
 
+    def test_listCategories_failure(self):
+        response = self.client().get('/categories')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['status_code'], 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'No categories found')
+
     def test_listQuestions(self):
         response = self.client().get('/questions')
         data = json.loads(response.data)
@@ -55,6 +64,15 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['total_questions'])
         self.assertTrue(data['categories'])
         self.assertTrue(data['current_category'] == None)
+
+    def test_listQuestions_failure(self):
+        response = self.client().get('/questions')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['status_code'], 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'No questions found')
 
     def test_deleteQuestion(self):
         dummy_question = Question(
