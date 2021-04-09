@@ -172,6 +172,11 @@ def create_app(test_config=None):
   and shown whether they were correct or not.
   '''
 
+    '''
+  @TODO:
+  Create error handlers for all expected errors
+  including 404 and 422.
+  '''
     @app.errorhandler(404)
     def not_found_error(error):
         return jsonify({
@@ -187,10 +192,5 @@ def create_app(test_config=None):
             'status_code': 422,
             'message': 'Record not found'
         })
-    '''
-  @TODO:
-  Create error handlers for all expected errors
-  including 404 and 422.
-  '''
 
     return app
