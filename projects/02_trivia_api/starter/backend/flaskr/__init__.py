@@ -3,6 +3,7 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
+import logging
 
 from models import setup_db, db, Question, Category
 
@@ -13,6 +14,8 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
     setup_db(app)
+
+    logging.basicConfig(filename='record.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
     '''
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
@@ -106,7 +109,6 @@ def create_app(test_config=None):
   '''
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_question(question_id):
-        error = False
         question = Question.query.get(question_id)
 
         if question is not None:
@@ -131,6 +133,36 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.
   '''
+    @app.route('/questions', methods=['POST', 'GET'])
+    def create_question():
+        data = request.get_json()
+
+        if (len(data['question']) > 0) & (len(data['answer']) > 0) & (data['difficulty'] is not None) \
+                & (data['category'] is not None):
+            new_question = data['question'].strip()
+            new_answer = data['answer'].strip()
+            new_difficulty = data['difficulty']
+            new_category = data['category']
+
+            try:
+                question = Question(question=new_question, answer=new_answer,
+                                    difficulty=new_difficulty, category=new_category)
+                question.insert()
+
+                questions = Question.query.order_by(Question.id).all()
+                all_questions = paginate_questions(request, questions)
+
+                return jsonify({
+                    'success': True,
+                    'status_code': 200,
+                    'message': 'Question created',
+                    'questions': all_questions,
+                    'total_questions': (len(questions))
+                })
+            except:
+                abort(422)
+        else:
+            abort(400)
 
     '''
   @TODO:
@@ -169,6 +201,14 @@ def create_app(test_config=None):
   Create error handlers for all expected errors
   including 404 and 422.
   '''
+    @app.errorhandler(400)
+    def not_found_error(error):
+        return jsonify({
+            'success': False,
+            'status_code': 400,
+            'message': 'Request failed: Please check your syntax and punctuation'
+        }), 400
+
     @app.errorhandler(404)
     def not_found_error(error):
         return jsonify({
@@ -182,7 +222,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': False,
             'status_code': 422,
-            'message': 'Record not found'
+            'message': 'Unable to process'
         })
 
     return app

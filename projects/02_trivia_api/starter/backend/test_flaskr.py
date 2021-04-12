@@ -53,7 +53,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['status_code'], 422)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'Record not found')
+        self.assertEqual(data['message'], 'Unable to process')
 
     def test_listQuestions(self):
         response = self.client().get('/questions')
@@ -74,7 +74,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['status_code'], 422)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'Record not found')
+        self.assertEqual(data['message'], 'Unable to process')
 
     def test_deleteQuestion(self):
         dummy_question = Question(
@@ -99,7 +99,47 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['status_code'], 422)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'Record not found')
+        self.assertEqual(data['message'], 'Unable to process')
+
+    def test_questionCreate(self):
+        dummy_question = {'question': 'new_question',
+                          'answer': 'new_answer', 'difficulty': '1', 'category': '1'}
+
+        response = self.client().post('/questions', json=dummy_question)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['status_code'], 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], 'Question created')
+        self.assertTrue(data['questions'])
+        self.assertTrue(data['total_questions'])
+
+    def test_questionCreate_fail_422(self):
+        dummy_question = {'question': 'test_question', 'answer': 'test_answer',
+                          'difficulty': '1', 'category': '3'}
+
+        response = self.client().post('/questions', json=dummy_question)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['status_code'], 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(
+            data['message'], 'Unable to process')
+
+    def test_questionCreate_fail_400(self):
+        dummy_question = {'question': '', 'answer': 'test_answer',
+                          'difficulty': '1', 'category': '3'}
+
+        response = self.client().post('/questions', json=dummy_question)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data['status_code'], 400)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(
+            data['message'], 'Request failed: Please check your syntax and punctuation')
 
 
 # Make the tests conveniently executable
