@@ -117,7 +117,7 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_questionCreate_fail_422(self):
         dummy_question = {'question': 'test_question', 'answer': 'test_answer',
-                          'difficulty': '1', 'category': '3'}
+                          'difficulty': '1', 'category': '7'}
 
         response = self.client().post('/questions', json=dummy_question)
         data = json.loads(response.data)
@@ -140,6 +140,28 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(
             data['message'], 'Request failed: Please check your syntax and punctuation')
+
+    def test_searchQuestion(self):
+        search_term = {'searchTerm': 'tItLE'}
+
+        response = self.client().post('/questions', json=search_term)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['status_code'], 200)
+        self.assertTrue(len(data['questions']))
+        self.assertTrue(data['total_questions'])
+
+    def test_searchQuestion_blank(self):
+        search_term = {'searchTerm': ' '}
+
+        response = self.client().post('/questions', json=search_term)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['status_code'], 200)
+        self.assertTrue(len(data['questions']))
+        self.assertTrue(data['total_questions'])
 
 
 # Make the tests conveniently executable

@@ -50,6 +50,22 @@ def create_app(test_config=None):
 
         return results[start:end]
 
+    def get_questions():
+        question_data = Question.query.order_by(Question.id).all()
+
+        return question_data
+
+    def count_questions():
+        question_count = Question.query.count()
+
+        return question_count
+
+    def search_questions(search_term):
+        search_results = Question.query.filter(
+            Question.question.ilike('%' + search_term + '%')).all()
+
+        return search_results
+
     '''
   @TODO:
   Create an endpoint to handle GET requests
@@ -159,24 +175,31 @@ def create_app(test_config=None):
                         'status_code': 200,
                         'message': 'Question created',
                         'questions': all_questions,
-                        'total_questions': (len(questions))
+                        'total_questions': count_questions()
                     })
                 except:
                     abort(422)
+            else:
+                abort(400)
         else:
-            search_term = data['searchTerm'].strip()
-            search_data = Question.query.filter(
-                Question.question.ilike('%' + search_term + '%')).all()
-            questions = [question.format() for question in search_data]
-            total_questions = Question.query.count()
+            try:
+                search_term = data['searchTerm'].strip()
+                search_data = search_questions(search_term)
+                questions_list = paginate_questions(request, search_data)
 
-            return jsonify({
-                'success': True,
-                'status_code': 200,
-                'questions': questions,
-                'total_questions': total_questions,
-                'currentCategory': None
-            })
+                i = 0
+                for question in search_data:
+                    i += 1
+
+                return jsonify({
+                    'success': True,
+                    'status_code': 200,
+                    'questions': questions_list,
+                    'total_questions': i,
+                    'currentCategory': None
+                })
+            except:
+                abort(422)
 
     '''
   @TODO:
@@ -188,9 +211,6 @@ def create_app(test_config=None):
   only question that include that string within their question.
   Try using the word "title" to start.
   '''
-    @app.route('/questions/search', methods=['POST'])
-    def search_questions():
-        data = request.get_json()
 
     '''
   @TODO:
