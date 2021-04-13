@@ -133,36 +133,50 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.
   '''
-    @app.route('/questions', methods=['POST', 'GET'])
-    def create_question():
+    @app.route('/questions', methods=['POST'])
+    def search_create_question():
         data = request.get_json()
 
-        if (len(data['question']) > 0) & (len(data['answer']) > 0) & (data['difficulty'] is not None) \
-                & (data['category'] is not None):
-            new_question = data['question'].strip()
-            new_answer = data['answer'].strip()
-            new_difficulty = data['difficulty']
-            new_category = data['category']
+        if 'searchTerm' not in data:
+            if (len(data['question']) > 0) & (len(data['answer']) > 0) & (data['difficulty'] is not None) \
+                    & (data['category'] is not None):
 
-            try:
-                question = Question(question=new_question, answer=new_answer,
-                                    difficulty=new_difficulty, category=new_category)
-                question.insert()
+                new_question = data['question'].strip()
+                new_answer = data['answer'].strip()
+                new_difficulty = data['difficulty']
+                new_category = data['category']
 
-                questions = Question.query.order_by(Question.id).all()
-                all_questions = paginate_questions(request, questions)
+                try:
+                    question = Question(question=new_question, answer=new_answer,
+                                        difficulty=new_difficulty, category=new_category)
+                    question.insert()
 
-                return jsonify({
-                    'success': True,
-                    'status_code': 200,
-                    'message': 'Question created',
-                    'questions': all_questions,
-                    'total_questions': (len(questions))
-                })
-            except:
-                abort(422)
+                    questions = Question.query.order_by(Question.id).all()
+                    all_questions = paginate_questions(request, questions)
+
+                    return jsonify({
+                        'success': True,
+                        'status_code': 200,
+                        'message': 'Question created',
+                        'questions': all_questions,
+                        'total_questions': (len(questions))
+                    })
+                except:
+                    abort(422)
         else:
-            abort(400)
+            search_term = data['searchTerm'].strip()
+            search_data = Question.query.filter(
+                Question.question.ilike('%' + search_term + '%')).all()
+            questions = [question.format() for question in search_data]
+            total_questions = Question.query.count()
+
+            return jsonify({
+                'success': True,
+                'status_code': 200,
+                'questions': questions,
+                'total_questions': total_questions,
+                'currentCategory': None
+            })
 
     '''
   @TODO:
@@ -174,6 +188,9 @@ def create_app(test_config=None):
   only question that include that string within their question.
   Try using the word "title" to start.
   '''
+    @app.route('/questions/search', methods=['POST'])
+    def search_questions():
+        data = request.get_json()
 
     '''
   @TODO:
