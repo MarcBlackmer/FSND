@@ -306,7 +306,7 @@ def create_app(test_config=None):
   including 404 and 422.
   '''
     @app.errorhandler(400)
-    def not_found_error(error):
+    def bad_request(error):
         return jsonify({
             'success': False,
             'status_code': 400,
@@ -322,12 +322,12 @@ def create_app(test_config=None):
         }), 404
 
     @app.errorhandler(405)
-    def unprocessable_error(error):
+    def method_not_allowed(error):
         return jsonify({
             'success': False,
             'status_code': 405,
             'message': 'Sorry. Can\'t do that here'
-        })
+        }), 405
 
     @app.errorhandler(422)
     def unprocessable_error(error):
@@ -335,14 +335,14 @@ def create_app(test_config=None):
             'success': False,
             'status_code': 422,
             'message': 'Unable to process'
-        })
+        }), 422
 
     @app.errorhandler(500)
-    def unprocessable_error(error):
+    def internal_server_error(error):
         return jsonify({
             'success': False,
             'status_code': 500,
             'message': 'Internal server error: It\'s not you. It\'s me'
-        })
+        }), 500
 
     return app
