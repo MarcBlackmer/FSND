@@ -264,19 +264,24 @@ def create_app(test_config=None):
         try:
             data = request.get_json()
 
-            previous_questions = data['previous_questions']
-            category_type = data['quiz_category']['type']
-            category_id = data['quiz_category']['id']
+            if data:
 
-            quiz_question = get_quiz_question(category_id, previous_questions)
+                previous_questions = data['previous_questions']
+                category_type = data['quiz_category']['type']
+                category_id = data['quiz_category']['id']
 
-            return jsonify({
-                'success': True,
-                'status_code': 200,
-                'previousQuestions': previous_questions,
-                'question': quiz_question,
-                'quiz_category': category_id
-            })
+                quiz_question = get_quiz_question(
+                    category_id, previous_questions)
+
+                return jsonify({
+                    'success': True,
+                    'status_code': 200,
+                    'previousQuestions': previous_questions,
+                    'question': quiz_question,
+                    'quiz_category': category_id
+                })
+            else:
+                abort(422)
         except:
             abort(422)
 
