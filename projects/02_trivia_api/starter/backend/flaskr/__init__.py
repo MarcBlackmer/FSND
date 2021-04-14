@@ -46,10 +46,20 @@ def create_app(test_config=None):
 
         return results[start:end]
 
-    def get_questions():
-        question_data = Question.query.order_by(Question.id).all()
+    def get_question_list():
+        questions = Question.query.order_by(Question.id).all()
 
-        return question_data
+        return questions
+
+    def get_question_by_id(question_id):
+        question = Question.query.get(question_id)
+
+        return question
+
+    def get_questions_by_category_id(category_id):
+        question = Question.query.filter(Question.category == category_id)
+
+        return question
 
     def count_questions():
         question_count = Question.query.count()
@@ -108,9 +118,8 @@ def create_app(test_config=None):
     @app.route('/questions', methods=['GET'])
     def get_questions():
 
-        questions = Question.query.order_by(Question.id).all()
+        questions = get_question_list()
         all_questions = paginate_questions(request, questions)
-
         all_categories = get_categories_list()
 
         if len(all_questions):
@@ -133,7 +142,7 @@ def create_app(test_config=None):
   '''
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_question(question_id):
-        question = Question.query.get(question_id)
+        question = get_question_by_id(question_id)
 
         if question is not None:
             question.delete()
@@ -175,7 +184,7 @@ def create_app(test_config=None):
                                         difficulty=new_difficulty, category=new_category)
                     question.insert()
 
-                    questions = Question.query.order_by(Question.id).all()
+                    questions = get_question_list()
                     all_questions = paginate_questions(request, questions)
 
                     return jsonify({
@@ -231,8 +240,7 @@ def create_app(test_config=None):
     @app.route('/categories/<int:category_id>/questions', methods=['GET'])
     def get_questions_by_category(category_id):
 
-        questions = Question.query.filter(
-            Question.category == category_id)
+        questions = get_questions_by_category_id(category_id)
 
         questions_list = [question.format() for question in questions]
 
