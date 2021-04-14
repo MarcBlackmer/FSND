@@ -171,8 +171,8 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['status_code'], 200)
         self.assertTrue(len(data['questions']))
-        self.assertTrue(data['total_questions'])
-        self.assertTrue(data['category_id'])
+        self.assertTrue(data['totalQuestions'])
+        self.assertTrue(data['currentCategory'])
 
     def test_questionByCategory_fail_422(self):
 
@@ -181,6 +181,28 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['status_code'], 422)
+
+    def test_quiz(self):
+        submission = {"previous_questions": [],
+                      "quiz_category": {"type": "Science", "id": '1'}}
+
+        response = self.client().post('/quizzes', json=submission)
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['status_code'], 200)
+        self.assertEqual(data['previousQuestions'], [])
+        self.assertTrue(data['currentQuestion'])
+        self.assertEqual(data['quiz_category'], 1)
+
+    def test_quiz_fail_405(self):
+        response = self.client().get('/quizzes')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['status_code'], 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Sorry. Can\'t do that here')
 
 
 # Make the tests conveniently executable

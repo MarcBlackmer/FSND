@@ -3,7 +3,6 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
-import logging
 
 from models import setup_db, db, Question, Category
 
@@ -14,8 +13,6 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
     setup_db(app)
-
-    logging.basicConfig(filename='record.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
     '''
   @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
@@ -35,7 +32,6 @@ def create_app(test_config=None):
 
     def get_categories_list():
         categories = Category.query.order_by(Category.type).all()
-        # the front end is expecting this format to be returned
         category_list = {
             category.id: category.type for category in categories}
 
@@ -65,6 +61,18 @@ def create_app(test_config=None):
             Question.question.ilike('%' + search_term + '%')).all()
 
         return search_results
+
+    def get_quiz_question(cat_id, previous_q):
+        if cat_id == 0:
+            quiz_questions = Question.query.filter(
+                Question.id.notin_(previous_q)).all()
+        else:
+            quiz_questions = Question.query.filter(
+                Question.category == cat_id, Question.id.notin_(previous_q)).all()
+
+        quiz_question = random.choice(quiz_questions).format()
+
+        return quiz_question
 
     '''
   @TODO:
@@ -229,7 +237,7 @@ def create_app(test_config=None):
         questions_list = [question.format() for question in questions]
 
         i = 0
-        for question in questions:
+        for question in questions_list:
             i += 1
 
         return jsonify({
@@ -251,6 +259,26 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not.
   '''
+    @app.route('/quizzes', methods=['POST'])
+    def create_quiz():
+        try:
+            data = request.get_json()
+
+            previous_questions = data['previous_questions']
+            category_type = data['quiz_category']['type']
+            category_id = data['quiz_category']['id']
+
+            quiz_question = get_quiz_question(category_id, previous_questions)
+
+            return jsonify({
+                'success': True,
+                'status_code': 200,
+                'previousQuestions': previous_questions,
+                'question': quiz_question,
+                'quiz_category': category_id
+            })
+        except:
+            abort(422)
 
     '''
   @TODO:
@@ -272,6 +300,14 @@ def create_app(test_config=None):
             'status_code': 404,
             'message': 'Resource not found'
         }), 404
+
+    @app.errorhandler(405)
+    def unprocessable_error(error):
+        return jsonify({
+            'success': False,
+            'status_code': 405,
+            'message': 'Sorry. Can\'t do that here'
+        })
 
     @app.errorhandler(422)
     def unprocessable_error(error):
