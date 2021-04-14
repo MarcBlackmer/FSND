@@ -61,10 +61,13 @@ def create_app(test_config=None):
 
         return question
 
-    def count_questions():
-        question_count = Question.query.count()
+    def count(type):
+        if type:
+            count = type.query.count()
+        else:
+            abort(422)
 
-        return question_count
+        return count
 
     def search_questions(search_term):
         search_results = Question.query.filter(
@@ -192,7 +195,7 @@ def create_app(test_config=None):
                         'status_code': 200,
                         'message': 'Question created',
                         'questions': all_questions,
-                        'total_questions': count_questions()
+                        'total_questions': count(Question)
                     })
                 except:
                     abort(422)
@@ -239,24 +242,26 @@ def create_app(test_config=None):
   '''
     @app.route('/categories/<int:category_id>/questions', methods=['GET'])
     def get_questions_by_category(category_id):
+        if category_id <= count(Category):
+            try:
+                questions = get_questions_by_category_id(category_id)
+                questions_list = [question.format() for question in questions]
 
-        try:
-            questions = get_questions_by_category_id(category_id)
-            questions_list = [question.format() for question in questions]
+                i = 0
+                for question in questions_list:
+                    i += 1
 
-            i = 0
-            for question in questions_list:
-                i += 1
-
-            return jsonify({
-                'success': True,
-                'status_code': 200,
-                'questions': questions_list,
-                'totalQuestions': i,
-                'currentCategory': category_id
-            })
-        except:
-            abort(422)
+                return jsonify({
+                    'success': True,
+                    'status_code': 200,
+                    'questions': questions_list,
+                    'totalQuestions': i,
+                    'currentCategory': category_id
+                })
+            except:
+                abort(422)
+        else:
+            abort(400)
 
     '''
   @TODO:

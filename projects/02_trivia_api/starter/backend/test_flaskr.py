@@ -182,13 +182,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['totalQuestions'])
         self.assertTrue(data['currentCategory'])
 
-    def test_questionByCategory_fail_422(self):
-
-        response = self.client().get('/categories/7/questions')
+    def test_questionByCategory_fail_400(self):
+        # Test requesting a category ID that doesn't exist
+        response = self.client().get('/categories/1000/questions')
         data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['status_code'], 422)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data['status_code'], 400)
 
     def test_quiz(self):
         submission = {"previous_questions": [],
@@ -204,8 +204,10 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['quiz_category'], 1)
 
     def test_quiz_fail_422(self):
+        # Testing a malformed request
+        character = '_'
         submission = {'previous_questions': [
-            _], 'quiz_category': {'type': '', 'id': 'x'}}
+            character], 'quiz_category': {'type': '', 'id': 'x'}}
 
         response = self.client().post('/quizzes', json=submission)
         data = json.loads(response.data)
