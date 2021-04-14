@@ -240,21 +240,23 @@ def create_app(test_config=None):
     @app.route('/categories/<int:category_id>/questions', methods=['GET'])
     def get_questions_by_category(category_id):
 
-        questions = get_questions_by_category_id(category_id)
+        try:
+            questions = get_questions_by_category_id(category_id)
+            questions_list = [question.format() for question in questions]
 
-        questions_list = [question.format() for question in questions]
+            i = 0
+            for question in questions_list:
+                i += 1
 
-        i = 0
-        for question in questions_list:
-            i += 1
-
-        return jsonify({
-            'success': True,
-            'status_code': 200,
-            'questions': questions_list,
-            'totalQuestions': i,
-            'currentCategory': category_id
-        })
+            return jsonify({
+                'success': True,
+                'status_code': 200,
+                'questions': questions_list,
+                'totalQuestions': i,
+                'currentCategory': category_id
+            })
+        except:
+            abort(422)
 
     '''
   @TODO:

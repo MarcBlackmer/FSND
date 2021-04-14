@@ -102,7 +102,8 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'Unable to process')
 
     def test_questionCreate(self):
-        dummy_question = {'question': 'new_question',
+        question_name = 'new_question'
+        dummy_question = {'question': question_name,
                           'answer': 'new_answer', 'difficulty': '1', 'category': '1'}
 
         response = self.client().post('/questions', json=dummy_question)
@@ -114,6 +115,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'Question created')
         self.assertTrue(data['questions'])
         self.assertTrue(data['total_questions'])
+
+        # Remove the test question from the database
+        try:
+            Question.query.filter_by(question=question_name).delete()
+            db.session.commit()
+        except:
+            db.session.rollback()
 
     def test_questionCreate_fail_422(self):
         dummy_question = {'question': 'test_question', 'answer': 'test_answer',
