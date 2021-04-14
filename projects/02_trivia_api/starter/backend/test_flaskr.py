@@ -207,7 +207,7 @@ class TriviaTestCase(unittest.TestCase):
         # Testing a malformed request
         character = '_'
         submission = {'previous_questions': [
-            character], 'quiz_category': {'type': '', 'id': 'x'}}
+            character], 'quiz_category': {'type': 'Science', 'id': 1}}
 
         response = self.client().post('/quizzes', json=submission)
         data = json.loads(response.data)
