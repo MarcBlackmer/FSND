@@ -337,4 +337,12 @@ def create_app(test_config=None):
             'message': 'Unable to process'
         })
 
+    @app.errorhandler(500)
+    def unprocessable_error(error):
+        return jsonify({
+            'success': False,
+            'status_code': 500,
+            'message': 'Internal server error: It\'s not you. It\'s me'
+        })
+
     return app
