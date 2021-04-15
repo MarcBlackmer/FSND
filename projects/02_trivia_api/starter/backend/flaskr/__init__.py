@@ -200,12 +200,12 @@ def create_app(test_config=None):
     def search_create_question():
         data = request.get_json()
 
-        if 'searchTerm' not in data:
+        if not data['searchTerm']:
             if (
-                (len(data['question']) > 0)
-                        and (len(data['answer']) > 0)
-                        and data['difficulty'] is not None
-                and data['category'] is not None
+                (len(data['question']) > 0) and
+                (len(data['answer']) > 0) and
+                data['difficulty'] is not None and
+                data['category'] is not None
             ):
 
                 new_question = data['question'].strip()
@@ -232,7 +232,7 @@ def create_app(test_config=None):
                         'questions': all_questions,
                         'total_questions': count(Question)
                     })
-                except ValueError as error:
+                except Exception as error:
                     print(error)
             else:
                 abort(400)
