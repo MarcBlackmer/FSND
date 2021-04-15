@@ -200,7 +200,7 @@ def create_app(test_config=None):
     def search_create_question():
         data = request.get_json()
 
-        if not data['searchTerm']:
+        if 'searchTerm' not in data:
             if (
                 (len(data['question']) > 0) and
                 (len(data['answer']) > 0) and
