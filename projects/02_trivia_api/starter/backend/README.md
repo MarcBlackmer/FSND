@@ -71,12 +71,12 @@ One note before you delve into your tasks: for each endpoint you are expected to
 Below, you will find the details of each of the available endpoints in the Trivia application.
 
 ## Endpoints list
-GET '/categories'
-GET '/questions'
-GET '/categories/<id>/questions'
-DELETE '/questions/<id>'
-POST '/questions'
-POST '/quizzes'
+- GET '/categories'
+- GET '/questions'
+- GET '/categories/\<id\>/questions'
+- DELETE '/questions/\<id\>'
+- POST '/questions'
+- POST '/quizzes'
 
 Note that all requests will return a status code and success status as True or False.
 
@@ -102,7 +102,7 @@ Note that all requests will return a status code and success status as True or F
 ```
 
 ### GET '/questions'
-- **Fetches** a dictionary of categories and a list paginated questions
+- **Fetches** a dictionary of categories and a list of paginated questions.
 - **Request arguments:** None
 - **Returns** category_id: category_type for all available categories and a list of questions with key:value pairs as shown in this example. Additional data returned:
   - Total questions
@@ -140,9 +140,9 @@ Note that all requests will return a status code and success status as True or F
 }
 ```
 
-### GET '/categories/<id>/questions'
+### GET '/categories/\<id\>/questions'
 - **Fetches** a list of questions based upon the selected category ID
-- **Request arguments**: category_id as an integer
+- **Request arguments**: category ID as an integer
 - **Returns** a list of questions for that selected category, as well as:
   - Total questions that meet the criterion
 
@@ -186,7 +186,7 @@ Example:
   "totalQuestions": 4
 }
 ```
-### DELETE '/questions/<id>'
+### DELETE '/questions/\<id\>'
 - **Deletes** the selected question based upon the question ID
 - **Request arguments:** The question ID as an integer
 - **Returns** status codes and verification message, as in this example:
