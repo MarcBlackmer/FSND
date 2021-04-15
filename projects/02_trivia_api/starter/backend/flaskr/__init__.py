@@ -173,7 +173,7 @@ def create_app(test_config=None):
     def search_create_question():
         data = request.get_json()
 
-        if 'searchTerm' not in data:
+        if not data['searchTerm']:
             if (len(data['question']) > 0) & (len(data['answer']) > 0) & (data['difficulty'] is not None) \
                     & (data['category'] is not None):
 

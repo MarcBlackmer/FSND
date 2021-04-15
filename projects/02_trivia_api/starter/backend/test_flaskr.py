@@ -46,14 +46,14 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['categories']))
 
-    def test_listCategories_failure(self):
-        response = self.client().get('/categories')
+    def test_listCategories_fail_405(self):
+        response = self.client().post('/categories')
         data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['status_code'], 422)
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(data['status_code'], 405)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'Unable to process')
+        self.assertEqual(data['message'], 'Sorry. Can\'t do that here')
 
     def test_listQuestions(self):
         response = self.client().get('/questions')
@@ -67,14 +67,15 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['categories'])
         self.assertTrue(data['current_category'] == None)
 
-    def test_listQuestions_failure(self):
-        response = self.client().get('/questions')
+    def test_listQuestions_fail_500(self):
+        response = self.client().post('/questions')
         data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['status_code'], 422)
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(data['status_code'], 500)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'Unable to process')
+        self.assertEqual(
+            data['message'], 'Internal server error: It\'s not you. It\'s me')
 
     def test_deleteQuestion(self):
         dummy_question = Question(
@@ -92,11 +93,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], 'Record deleted')
 
-    def test_deleteQuestion_failure(self):
+    def test_deleteQuestion_fail_422(self):
         response = self.client().delete('/questions/1000')
         data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 422)
         self.assertEqual(data['status_code'], 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Unable to process')
@@ -130,7 +131,7 @@ class TriviaTestCase(unittest.TestCase):
         response = self.client().post('/questions', json=dummy_question)
         data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 422)
         self.assertEqual(data['status_code'], 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(
@@ -212,7 +213,7 @@ class TriviaTestCase(unittest.TestCase):
         response = self.client().post('/quizzes', json=submission)
         data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 422)
         self.assertEqual(data['status_code'], 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'Unable to process')
