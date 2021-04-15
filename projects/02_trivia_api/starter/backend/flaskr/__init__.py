@@ -15,7 +15,8 @@ def create_app(test_config=None):
     setup_db(app)
 
     '''
-  @TODO: Set up CORS. Allow '*' for origins. Delete the sample route after completing the TODOs
+  @TODO: Set up CORS. Allow '*' for origins.
+  Delete the sample route after completing the TODOs
   '''
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
@@ -31,33 +32,47 @@ def create_app(test_config=None):
         return response
 
     def get_categories_list():
-        categories = Category.query.order_by(Category.type).all()
+        categories = (
+            Category.query
+            .order_by(Category.type)
+            .all()
+        )
         category_list = {
             category.id: category.type for category in categories}
 
         return category_list
 
-    def paginate_questions(request, questions, items_per_page=QUESTIONS_PER_PAGE):
+    def paginate_questions(request, questions, items=QUESTIONS_PER_PAGE):
         page = request.args.get('page', 1, type=int)
-        start = (page - 1) * items_per_page
-        end = start + items_per_page
+        start = (page - 1) * items
+        end = start + items
 
         results = [question.format() for question in questions]
 
         return results[start:end]
 
     def get_question_list():
-        questions = Question.query.order_by(Question.id).all()
+        questions = (
+            Question.query
+            .order_by(Question.id)
+            .all()
+        )
 
         return questions
 
     def get_question_by_id(question_id):
-        question = Question.query.get(question_id)
+        question = (
+            Question.query
+            .get(question_id)
+        )
 
         return question
 
     def get_questions_by_category_id(category_id):
-        question = Question.query.filter(Question.category == category_id)
+        question = (
+            Question.query
+            .filter(Question.category == category_id)
+        )
 
         return question
 
@@ -70,18 +85,28 @@ def create_app(test_config=None):
         return count
 
     def search_questions(search_term):
-        search_results = Question.query.filter(
-            Question.question.ilike('%' + search_term + '%')).all()
+        search_results = (
+            Question.query
+            .filter(Question.question.ilike('%' + search_term + '%'))
+            .all()
+        )
 
         return search_results
 
     def get_quiz_question(cat_id, previous_q):
         if cat_id == 0:
-            quiz_questions = Question.query.filter(
-                Question.id.notin_(previous_q)).all()
+            quiz_questions = (
+                Question.query
+                .filter(Question.id.notin_(previous_q))
+                .all()
+            )
         else:
-            quiz_questions = Question.query.filter(
-                Question.category == cat_id, Question.id.notin_(previous_q)).all()
+            quiz_questions = (
+                Question.query
+                .filter(Question.category == cat_id,
+                        Question.id.notin_(previous_q))
+                .all()
+            )
 
         quiz_question = random.choice(quiz_questions).format()
 
@@ -115,7 +140,8 @@ def create_app(test_config=None):
 
   TEST: At this point, when you start the application
   you should see questions and categories generated,
-  ten questions per page and pagination at the bottom of the screen for three pages.
+  ten questions per page and pagination at the bottom of
+  the screen for three pages.
   Clicking on the page numbers should update the questions.
   '''
     @app.route('/questions', methods=['GET'])
@@ -140,7 +166,8 @@ def create_app(test_config=None):
   @TODO:
   Create an endpoint to DELETE question using a question ID.
 
-  TEST: When you click the trash icon next to a question, the question will be removed.
+  TEST: When you click the trash icon next to a question,
+  the question will be removed.
   This removal will persist in the database and when you refresh the page.
   '''
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
@@ -174,7 +201,9 @@ def create_app(test_config=None):
         data = request.get_json()
 
         if not data['searchTerm']:
-            if (len(data['question']) > 0) & (len(data['answer']) > 0) & (data['difficulty'] is not None) \
+            if (len(data['question']) > 0) \
+                & (len(data['answer']) > 0) \
+                & (data['difficulty'] is not None) \
                     & (data['category'] is not None):
 
                 new_question = data['question'].strip()
@@ -183,8 +212,12 @@ def create_app(test_config=None):
                 new_category = data['category']
 
                 try:
-                    question = Question(question=new_question, answer=new_answer,
-                                        difficulty=new_difficulty, category=new_category)
+                    question = Question(
+                        question=new_question,
+                        answer=new_answer,
+                        difficulty=new_difficulty,
+                        category=new_category
+                    )
                     question.insert()
 
                     questions = get_question_list()
@@ -310,7 +343,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': False,
             'status_code': 400,
-            'message': 'Request failed: Please check your syntax and punctuation'
+            'message': 'Request failed: Check your syntax and punctuation'
         }), 400
 
     @app.errorhandler(404)
