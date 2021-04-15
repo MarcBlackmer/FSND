@@ -200,11 +200,13 @@ def create_app(test_config=None):
     def search_create_question():
         data = request.get_json()
 
-        if not data['searchTerm']:
-            if (len(data['question']) > 0) \
-                & (len(data['answer']) > 0) \
-                & (data['difficulty'] is not None) \
-                    & (data['category'] is not None):
+        if 'searchTerm' not in data:
+            if (
+                (len(data['question']) > 0)
+                        and (len(data['answer']) > 0)
+                        and data['difficulty'] is not None
+                and data['category'] is not None
+            ):
 
                 new_question = data['question'].strip()
                 new_answer = data['answer'].strip()
@@ -230,7 +232,7 @@ def create_app(test_config=None):
                         'questions': all_questions,
                         'total_questions': count(Question)
                     })
-                except Exception as error:
+                except ValueError as error:
                     print(error)
             else:
                 abort(400)
@@ -375,7 +377,7 @@ def create_app(test_config=None):
         return jsonify({
             'success': False,
             'status_code': 500,
-            'message': 'Internal server error: It\'s not you. It\'s me'
+            'message': 'Internal server error'
         }), 500
 
     return app

@@ -80,7 +80,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['status_code'], 500)
         self.assertEqual(data['success'], False)
         self.assertEqual(
-            data['message'], 'Internal server error: It\'s not you. It\'s me')
+            data['message'], 'Internal server error')
 
     def test_deleteQuestion(self):
         dummy_question = Question(
@@ -110,7 +110,9 @@ class TriviaTestCase(unittest.TestCase):
     def test_questionCreate(self):
         question_name = 'new_question'
         dummy_question = {'question': question_name,
-                          'answer': 'new_answer', 'difficulty': '1', 'category': '1'}
+                          'answer': 'new_answer',
+                          'difficulty': '1',
+                          'category': '1'}
 
         response = self.client().post('/questions', json=dummy_question)
         data = json.loads(response.data)
@@ -129,19 +131,6 @@ class TriviaTestCase(unittest.TestCase):
         except:
             db.session.rollback()
 
-    def test_questionCreate_fail_422(self):
-        dummy_question = {'question': 'test_question', 'answer': 'test_answer',
-                          'difficulty': '1', 'category': '7'}
-
-        response = self.client().post('/questions', json=dummy_question)
-        data = json.loads(response.data)
-
-        self.assertEqual(response.status_code, 422)
-        self.assertEqual(data['status_code'], 422)
-        self.assertEqual(data['success'], False)
-        self.assertEqual(
-            data['message'], 'Unable to process')
-
     def test_questionCreate_fail_400(self):
         dummy_question = {'question': '', 'answer': 'test_answer',
                           'difficulty': '1', 'category': '3'}
@@ -153,7 +142,8 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['status_code'], 400)
         self.assertEqual(data['success'], False)
         self.assertEqual(
-            data['message'], 'Request failed: Please check your syntax and punctuation')
+            data['message'],
+            'Request failed: Check your syntax and punctuation')
 
     def test_searchQuestion(self):
         search_term = {'searchTerm': 'tItLE'}
@@ -209,19 +199,18 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['question'])
         self.assertEqual(data['quiz_category'], 1)
 
-    def test_quiz_fail_422(self):
-        # Testing a malformed request
-        character = '_'
+    def test_quiz_fail(self):
         submission = {'previous_questions': [
-            character], 'quiz_category': {'type': 'Science', 'id': 1}}
+            1, 2], 'quiz_category': {'type': 'Science', 'id': 1}}
 
-        response = self.client().post('/quizzes', json=submission)
+        response = self.client().get('/quizzes', json=submission)
         data = json.loads(response.data)
 
-        self.assertEqual(response.status_code, 422)
-        self.assertEqual(data['status_code'], 422)
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(data['status_code'], 405)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], 'Unable to process')
+        self.assertEqual(
+            data['message'], 'Sorry. Can\'t do that here')
 
 
 # Make the tests conveniently executable
