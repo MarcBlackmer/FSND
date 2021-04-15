@@ -230,8 +230,8 @@ def create_app(test_config=None):
                         'questions': all_questions,
                         'total_questions': count(Question)
                     })
-                except:
-                    abort(422)
+                except Exception as error:
+                    print(error)
             else:
                 abort(400)
         else:
@@ -251,8 +251,8 @@ def create_app(test_config=None):
                     'total_questions': i,
                     'currentCategory': None
                 })
-            except:
-                abort(422)
+            except Exception as error:
+                print(error)
 
     '''
   @TODO:
@@ -291,8 +291,8 @@ def create_app(test_config=None):
                     'totalQuestions': i,
                     'currentCategory': category_id
                 })
-            except:
-                abort(422)
+            except Exception as error:
+                print(error)
         else:
             abort(400)
 
@@ -330,8 +330,8 @@ def create_app(test_config=None):
                 })
             else:
                 abort(422)
-        except:
-            abort(422)
+        except Exception as error:
+            print(error)
 
     '''
   @TODO:
