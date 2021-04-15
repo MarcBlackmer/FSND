@@ -3,8 +3,11 @@ from sqlalchemy import Column, String, Integer, create_engine
 from flask_sqlalchemy import SQLAlchemy
 import json
 
-database_name = "trivia_test"
-database_path = "postgresql://{}/{}".format('localhost:5432', database_name)
+DB_HOST = os.getenv('DB_HOST', 'localhost:5432')
+DB_USER = os.getenv('DB_USER', 'udacity')
+DB_PWD = os.getenv('DB_PWD', '')
+DB_NAME = os.getenv('DB_NAME', 'trivia_test')
+DB_PATH = 'postgresql://{}/{}'.format(DB_HOST, DB_NAME, DB_USER, DB_PWD)
 
 db = SQLAlchemy()
 
@@ -14,7 +17,7 @@ setup_db(app)
 '''
 
 
-def setup_db(app, database_path=database_path):
+def setup_db(app, database_path=DB_PATH):
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
