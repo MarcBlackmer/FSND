@@ -237,6 +237,7 @@ This endpoint performs two functions:
 - **Request arguments:** The new question submission form provides the fields and options required. The question and answer are submitted by the user. Category and difficulty are provided as options in dropdown menus.
 - **Returns** a paginated list of all questions including the recently added question. Additional data:
   - Updated total questions
+  - Creation verification message
 
 ### POST '/quizzes'
 This endpoint randomly selects a question based upon the category selected by the user on the List page. A user may select a given category or "All." The app also keeps track of previously selected questions so as to not provide the same question repeatedly.
