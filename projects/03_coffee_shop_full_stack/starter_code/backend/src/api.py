@@ -32,7 +32,7 @@ CORS(app)
 
 @app.route('/drinks', methods=['GET'])
 def get_drinks():
-    drinks = short()
+    drinks = [drink.short() for drink in Drink.query.all()]
 
     if len(drinks):
         return jsonify({
@@ -55,9 +55,9 @@ def get_drinks():
 
 
 @app.route('/drinks-detail', methods=['GET'])
-@check_permissions
+@check_permissions('get:drinks-detail')
 def get_drinks_detail():
-    drinks = long()
+    drinks = [drink.long() for drink in Drink.query.all()]
 
     if len(drinks):
         return jsonify({
@@ -78,6 +78,18 @@ def get_drinks_detail():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
+
+
+@app.route('/drinks', methods=['POST'])
+@check_permissions('post:drinks')
+def create_drink(data):
+    body = request.get_json()
+
+    if len(body):
+        title = body['title']
+        recipe = json.dumps['recipe']
+    else:
+        abort(422)
 
 
 '''
