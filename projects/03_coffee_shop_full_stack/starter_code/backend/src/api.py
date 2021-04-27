@@ -54,6 +54,20 @@ def get_drinks():
 '''
 
 
+@app.route('/drinks-detail', methods=['GET'])
+def get_drinks_detail():
+    drinks = long()
+
+    if len(drinks):
+        return jsonify({
+            'status': 200,
+            'success': True,
+            'drinks': drinks
+        })
+    else:
+        abort(422)
+
+
 '''
 @TODO implement endpoint
     POST /drinks
