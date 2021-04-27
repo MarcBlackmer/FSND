@@ -68,7 +68,7 @@ def check_permissions(permission, payload):
         raise AuthError({
             'code': 'invalid_claims',
             'description': 'Permissions not included in JWT.'
-            }, 400)
+        }, 400)
 
     if permission not in payload['permission']:
         raise AuthError({
@@ -95,7 +95,7 @@ def check_permissions(permission, payload):
 
 
 def verify_decode_jwt(token):
-        jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
+    jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
     jwks = json.loads(jsonurl.read())
 
     unverified_header = jwt.get_unverified_header(token)
@@ -149,7 +149,6 @@ def verify_decode_jwt(token):
         'code': 'invalid_header',
                 'description': 'Unable to find the appropriate key.'
     }, 400)
-
 
 
 '''
