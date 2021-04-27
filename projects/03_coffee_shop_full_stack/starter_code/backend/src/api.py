@@ -105,6 +105,29 @@ def create_drink(data):
 '''
 
 
+@app.route('/drinks/<id>', methods=['PATCH'])
+@check_permissions('patch:drinks')
+def update_drink(drink_id):
+    try:
+        updated_drink = Drink.query.get(drink_id)
+
+        data = request.json()
+        if 'title' in data:
+            drink.title = data['title']
+        if 'recipe' in data:
+            drink.recipe = json.dumps(data['recipe'])
+
+        updated_drink.update()
+
+        return jsonify({
+            'status_code': 200,
+            'success': True,
+            'drinks': [updated_drink.long()]
+        })
+    except Exception:
+        abort(404)
+
+
 '''
 @TODO implement endpoint
     DELETE /drinks/<id>
