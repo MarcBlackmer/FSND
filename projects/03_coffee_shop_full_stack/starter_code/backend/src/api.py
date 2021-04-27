@@ -135,11 +135,27 @@ def update_drink(drink_id):
         it should respond with a 404 error if <id> is not found
         it should delete the corresponding row for <id>
         it should require the 'delete:drinks' permission
-    returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
+    returns status code 200 and json {"success": True, "delete": id} where id is
+    the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
 
 
+@app.route('/drinks/<id>'), methods = ['DELETE'])
+@check_permissions('delete:drinks')
+def delete_drink(drink_id):
+    try:
+        drink=Drink.query.get(drink_id)
+
+        drink.delete()
+
+        return jsonify({
+            'status_code': 200,
+            'success': True,
+            'delete': drink_id
+        })
+    except Exception:
+        abort(422)
 # Error Handling
 '''
 Example error handling for unprocessable entity
