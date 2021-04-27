@@ -30,6 +30,20 @@ CORS(app)
 '''
 
 
+@app.route('/drinks', methods=['GET'])
+def get_drinks():
+    drinks = short()
+
+    if len(drinks):
+        return jsonify({
+            'status_code': 200,
+            'success': True,
+            'drinks': drinks
+        })
+    else:
+        abort(422)
+
+
 '''
 @TODO implement endpoint
     GET /drinks-detail
