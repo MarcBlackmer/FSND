@@ -55,6 +55,7 @@ def get_drinks():
 
 
 @app.route('/drinks-detail', methods=['GET'])
+@check_permissions
 def get_drinks_detail():
     drinks = long()
 
