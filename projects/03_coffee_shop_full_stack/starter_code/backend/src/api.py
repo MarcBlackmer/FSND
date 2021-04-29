@@ -55,8 +55,8 @@ def get_drinks():
 
 
 @app.route('/drinks-detail', methods=['GET'])
-@check_permissions('get:drinks-detail')
-def get_drinks_detail():
+@requires_auth('get:drinks-detail')
+def get_drinks_detail(f):
     drinks = [drink.long() for drink in Drink.query.all()]
 
     if len(drinks):
@@ -81,8 +81,8 @@ def get_drinks_detail():
 
 
 @app.route('/drinks', methods=['POST'])
-@check_permissions('post:drinks')
-def create_drink(data):
+@requires_auth('post:drinks')
+def create_drink(f):
     body = request.get_json()
 
     if len(body):
@@ -106,8 +106,8 @@ def create_drink(data):
 
 
 @app.route('/drinks/<id>', methods=['PATCH'])
-@check_permissions('patch:drinks')
-def update_drink(drink_id):
+@requires_auth('patch:drinks')
+def update_drink(f, drink_id):
     try:
         updated_drink = Drink.query.get(drink_id)
 
@@ -142,8 +142,8 @@ def update_drink(drink_id):
 
 
 @app.route('/drinks/<id>', methods=['DELETE'])
-@check_permissions('delete:drinks')
-def delete_drink(drink_id):
+@requires_auth('delete:drinks')
+def delete_drink(f, drink_id):
     try:
         drink = Drink.query.get(drink_id)
 
