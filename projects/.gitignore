@@ -1,6 +1,7 @@
 .vscode
 __pycache__
 venv
+capstone/heroku_sample/
 
 # OS generated files #
 ######################
