@@ -163,18 +163,22 @@ def update_drink(f, id):
 
 @app.route('/drinks/<id>', methods=['DELETE'])
 @requires_auth('delete:drinks')
-def delete_drink(f, drink_id):
+def delete_drink(f, id):
     try:
-        drink = Drink.query.get(drink_id)
+        drink = Drink.query.get(id)
+        if drink:
+            drink.delete()
 
-        drink.delete()
+            return jsonify({
+                'status_code': 200,
+                'success': True,
+                'delete': id
+            })
+        else:
+            abort(404)
 
-        return jsonify({
-            'status_code': 200,
-            'success': True,
-            'delete': drink_id
-        })
-    except Exception:
+    except Exception as e:
+        print(e)
         abort(422)
 
 
