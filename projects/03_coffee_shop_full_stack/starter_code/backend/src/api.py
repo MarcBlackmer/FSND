@@ -32,16 +32,21 @@ CORS(app)
 
 @app.route('/drinks', methods=['GET'])
 def get_drinks():
-    drinks = [drink.short() for drink in Drink.query.all()]
+    try:
+        drinks = [drink.short() for drink in Drink.query.all()]
 
-    if len(drinks):
-        return jsonify({
-            'status_code': 200,
-            'success': True,
-            'drinks': drinks
-        })
-    else:
-        abort(422)
+        if len(drinks):
+            return jsonify({
+                'status_code': 200,
+                'success': True,
+                'drinks': drinks
+            })
+        else:
+            abort(422)
+
+    except Exception as e:
+        print(e)
+        abort(500)
 
 
 '''
@@ -120,25 +125,27 @@ def create_drink(form):
 
 @app.route('/drinks/<id>', methods=['PATCH'])
 @requires_auth('patch:drinks')
-def update_drink(f, drink_id):
+def update_drink(f, id):
     try:
-        updated_drink = Drink.query.get(drink_id)
+        data = request.get_json()
+        drink = Drink.query.get(id)
 
-        data = request.json()
-        if 'title' in data:
-            drink.title = data['title']
-        if 'recipe' in data:
-            drink.recipe = json.dumps(data['recipe'])
+        if drink:
+            drink.title = data.get('title')
+            drink.recipe = json.dumps(data.get('recipe'))
+            drink.update()
 
-        updated_drink.update()
+            return jsonify({
+                'status_code': 200,
+                'success': True,
+                'drinks': [drink.long()]
+            })
+        else:
+            abort(404)
 
-        return jsonify({
-            'status_code': 200,
-            'success': True,
-            'drinks': [updated_drink.long()]
-        })
-    except Exception:
-        abort(404)
+    except Exception as e:
+        print(e)
+        abort(422)
 
 
 '''
