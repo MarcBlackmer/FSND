@@ -178,7 +178,11 @@ def delete_drink(f, id):
                 'delete': id
             })
         else:
-            abort(404)
+            return jsonify({
+                'status_code': 404,
+                'success': False,
+                'error': 'Drink #' + id + ' not found to be edited'
+            })
 
     except Exception as e:
         print(e)
