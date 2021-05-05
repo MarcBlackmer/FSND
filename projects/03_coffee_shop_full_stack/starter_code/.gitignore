@@ -4,6 +4,7 @@ __pycache__/
 test.db
 backend/env/
 backend/*.postman_collection.json
+frontend/package-lock.json
 
 
 # OS generated files #
