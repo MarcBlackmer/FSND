@@ -2,6 +2,9 @@ venv/
 .vscode/
 __pycache__/
 test.db
+backend/env/
+backend/*.postman_collection.json
+
 
 # OS generated files #
 ######################
