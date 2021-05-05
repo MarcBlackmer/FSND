@@ -35,7 +35,7 @@ class AuthError(Exception):
 
 
 def get_token_auth_header():
-        # Unpack the request header
+    # Unpack the request header
     if 'Authorization' not in request.headers:
         abort(401)
 
@@ -58,8 +58,8 @@ def get_token_auth_header():
 
     it should raise an AuthError if permissions are not included in the payload
         !!NOTE check your RBAC settings in Auth0
-    it should raise an AuthError if the requested permission string is not in the payload permissions array
-    return true otherwise
+    it should raise an AuthError if the requested permission string is not in
+    the payload permissions array return true otherwise
 '''
 
 
@@ -90,7 +90,8 @@ def check_permissions(permission, payload):
     return the decoded payload
 
     !!NOTE urlopen has a common certificate error described here:
-    https://stackoverflow.com/questions/50236117/scraping-ssl-certificate-verify-failed-error-for-http-en-wikipedia-org
+    https://stackoverflow.com/questions/50236117/scraping-ssl-certificate-\
+    verify-failed-error-for-http-en-wikipedia-org
 '''
 
 
@@ -138,7 +139,8 @@ def verify_decode_jwt(token):
         except jwt.JWTClaimsError:
             raise AuthError({
                 'code': 'invalid_claims',
-                'description': 'Incorrect claims. Please, check the audience and issuer.'
+                'description': 'Incorrect claims. \
+                    Please, check the audience and issuer.'
             }, 401)
         except Exception:
             raise AuthError({
@@ -158,8 +160,9 @@ def verify_decode_jwt(token):
 
     it should use the get_token_auth_header method to get the token
     it should use the verify_decode_jwt method to decode the jwt
-    it should use the check_permissions method validate claims and check the requested permission
-    return the decorator which passes the decoded payload to the decorated method
+    it should use the check_permissions method validate claims and check the
+    requested permission return the decorator which passes the decoded payload
+    to the decorated method
 '''
 
 
