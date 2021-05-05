@@ -25,7 +25,8 @@ CORS(app)
     GET /drinks
         it should be a public endpoint
         it should contain only the drink.short() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
+    returns status code 200 and json {"success": True, "drinks": drinks} where
+        drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
 
@@ -54,7 +55,8 @@ def get_drinks():
     GET /drinks-detail
         it should require the 'get:drinks-detail' permission
         it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
+    returns status code 200 and json {"success": True, "drinks": drinks} where
+        drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
 
@@ -118,7 +120,8 @@ def create_drink(form):
         it should update the corresponding row for <id>
         it should require the 'patch:drinks' permission
         it should contain the drink.long() data representation
-    returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
+    returns status code 200 and json {"success": True, "drinks": drink} where
+        drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
 
@@ -155,8 +158,8 @@ def update_drink(f, id):
         it should respond with a 404 error if <id> is not found
         it should delete the corresponding row for <id>
         it should require the 'delete:drinks' permission
-    returns status code 200 and json {"success": True, "delete": id} where id is
-    the id of the deleted record
+    returns status code 200 and json {"success": True, "delete": id} where id
+        isthe id of the deleted record
         or appropriate status code indicating reason for failure
 '''
 
